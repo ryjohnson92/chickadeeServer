@@ -48,7 +48,9 @@ module.exports = class wsBase{
             msg = JSON.parse(msg);
             let op = Object.keys(msg)[0];
             if(typeof this.handlers[op]==='function'){
-                this.handlers[op](msg[op]);
+                let resp = this.handlers[op](msg[op]);
+                resp = (typeof resp !== 'string')?JSON.stringify(resp):resp;
+                this.device.send(resp);
             }
         }
         catch(err){

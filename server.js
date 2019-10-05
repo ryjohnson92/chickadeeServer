@@ -12,7 +12,7 @@ const port = 4000;
 const kPort = 8000;
 const credentials = {key: privateKey, cert: certificate};
 const app = express();
-const Kiosk = express();
+const api = express();
 /** Creates Server  */
 const httpsServer = https.createServer(credentials, app);
 httpsServer.listen(port);
@@ -24,25 +24,24 @@ const wss = new WebSocketServer({
 const OrderDirect = require('./z_newOrderDirect/orderDirect');
 /** This is the socket server  */
 //##### BUG 
-
-let server = new OrderDirect(wss);
-/*** Then start the kiosk server */
-Kiosk.set('view engine', 'ejs');
-Kiosk.set('views',path.join(__dirname,'WebPublic'));
+new OrderDirect(wss);
+/*** Then start the api server */
+api.set('view engine', 'ejs');
+api.set('views',path.join(__dirname,'WebPublic'));
 /// Body Parser Middlewares
-Kiosk.use(cookieparser('posdine'));
-Kiosk.use(bodyParser.json({limit: '500mb'}));
-Kiosk.engine('html', require('ejs').renderFile);
-Kiosk.use(bodyParser.urlencoded({ extended: false }));
-/*** Kiosk Web Server  */
-const kioskWebServer = https.createServer(credentials, Kiosk);
-kioskWebServer.listen(kPort);
-Kiosk.get('/kiosk',(req,res)=>{
-    res.render('./KioskWeb/index.html')
+api.use(cookieparser('posdine'));
+api.use(bodyParser.json({limit: '500mb'}));
+api.engine('html', require('ejs').renderFile);
+api.use(bodyParser.urlencoded({ extended: false }));
+/*** api Web Server  */
+const apiWebServer = https.createServer(credentials, api);
+apiWebServer.listen(kPort);
+api.get('/api',(req,res)=>{
+    res.render('./apiWeb/index.html')
 });
-Kiosk.get('/kiosk/kds',(req,res)=>{
+api.get('/api/kds',(req,res)=>{
     res.render('./KDS/index.html')
 });
-Kiosk.get('/kiosk/wmo',(req,res)=>{
+api.get('/api/wmo',(req,res)=>{
     res.render('./wmo/index.html')
 });
